@@ -18,12 +18,14 @@ npm i
 
 ## Setup
 Fill in the following dotenv Variables:
-*
-*
-*
-*
+* [TOTP_KEY](https://github.com/JerylKhoo/BIBO_4214-TOTP-Server/blob/b3279c6de59f9366b0417d40f68e17ddba565905/.env.example#L1)
+* [QR_KEY](https://github.com/JerylKhoo/BIBO_4214-TOTP-Server/blob/b3279c6de59f9366b0417d40f68e17ddba565905/.env.example#L2)
+* [ENCODE](https://github.com/JerylKhoo/BIBO_4214-TOTP-Server/blob/b3279c6de59f9366b0417d40f68e17ddba565905/.env.example#L3)
+* [TOTP_PORT](https://github.com/JerylKhoo/BIBO_4214-TOTP-Server/blob/b3279c6de59f9366b0417d40f68e17ddba565905/.env.example#L5)
+* [TOTP_LINK](https://github.com/JerylKhoo/BIBO_4214-TOTP-Server/blob/b3279c6de59f9366b0417d40f68e17ddba565905/.env.example#L7)
+* [QR_LINK](https://github.com/JerylKhoo/BIBO_4214-TOTP-Server/blob/b3279c6de59f9366b0417d40f68e17ddba565905/.env.example#L8)
 
-Run the Node Server
+## Running the TOTP Server
 ```bash
 npm start
 ```
