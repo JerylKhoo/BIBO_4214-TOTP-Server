@@ -8,8 +8,8 @@ require('dotenv').config();
 const {
   TOTP_KEY,
   QR_KEY,
-  TOTP_PORT: SERVER_PORT = 3172,
-  ENCODE: KEY_ENCODING = 'base32',
+  SERVER_PORT = 3172,
+  KEYS_ENCODING = 'base32',
 } = process.env;
 
 const keys = [];
@@ -33,7 +33,7 @@ app.post('/otp', (req, res) => {
     // Returns true if the token matches
     const tokenValidates = speakeasy.totp.verify({
       secret: TOTP_KEY,
-      encoding: KEY_ENCODING,
+      encoding: KEYS_ENCODING,
       token,
       window: 1,
     });
@@ -56,7 +56,7 @@ app.get('/qr', (req, res) => {
   try {
     var token = speakeasy.totp({
       secret: QR_KEY,
-      encoding: KEY_ENCODING,
+      encoding: KEYS_ENCODING,
       step: 15,
       digits: 8,
     });
