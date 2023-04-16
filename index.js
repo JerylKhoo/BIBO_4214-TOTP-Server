@@ -34,27 +34,6 @@ const db = new JsonDB(dbConfig);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// app.get("/api", (req,res) => {
-//   res.json({ message: "Welcome to the two factor authentication exmaple" })
-// });
-
-// app.post("/api/register", (req, res) => {
-//   const id = uuid.v4();
-//   try {
-//     const path = `/user/${id}`;
-//     // Create temporary secret until it it verified
-//     const temp_secret = speakeasy.generateSecret();
-//     // Create user in the database
-//     db.push(path, { id, temp_secret });
-//     // Send user id and base32 key to user
-//     res.json({ id, secret: temp_secret.base32 })
-//   } catch(e) {
-//     console.log(e);
-//     res.status(500).json({ message: 'Error generating secret key'})
-//   }
-// })
-
-
 app.post("/otp", (req,res) => {
   const { token } = req.body;
   try {
