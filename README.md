@@ -17,6 +17,13 @@ npm i
 ```
 
 ## Setup
+### Generating TOTP_KEYS
+The TOTP Server requires a TOTP key to be generated. This key is used to authenticate the WebApp and the bots. 
+(For Linux and MacOS users only)
+```bash
+echo $(tr -dc 'A-Z2-7' </dev/urandom | head -c 32)
+```
+
 Fill in the following dotenv Variables:
 * [SERVER_PORT](https://github.com/JerylKhoo/BIBO_4214-TOTP-Server/blob/b3279c6de59f9366b0417d40f68e17ddba565905/.env.example#L5) The port the server should run on
 * [TOTP_KEY](https://github.com/JerylKhoo/BIBO_4214-TOTP-Server/blob/b3279c6de59f9366b0417d40f68e17ddba565905/.env.example#L1) TOTP key for accessing the WebApp
