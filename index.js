@@ -1,17 +1,27 @@
-const express = require("express");
+const express = require('express');
 const bodyParser = require('body-parser');
 const JsonDB = require('node-json-db').JsonDB;
 const Config = require('node-json-db/dist/lib/JsonDBConfig').Config;
-const uuid = require("uuid");
-const speakeasy = require("speakeasy");
-const cors = require("cors");
+const uuid = require('uuid');
+const speakeasy = require('speakeasy');
+const cors = require('cors');
 require('dotenv').config();
 
-const totp = process.env.TOTP_KEY
-const keys = []
+const {
+  TOTP_KEY,
+  QR_KEY,
+  TOTP_PORT: SERVER_PORT = 3172,
+  ENCODE: KEY_ENCODING = 'base32',
+} = process.env;
 
-if (totp === undefined) {
-  throw "TOTP Key must be defined"
+const keys = [];
+
+if (TOTP_KEY === undefined) {
+  throw 'TOTP_KEY must be defined';
+}
+
+if (QR_KEY === undefined) {
+  throw 'QR_KEY must be defined';
 }
 
 const app = express();
@@ -23,7 +33,7 @@ app.use(cors());
  * @param {boolean} Instructs JsonDB to save the database in human readable format
  * @param {string} separator - the separator to use when accessing database values
  */
-const dbConfig = new Config("myDataBase", true, false, '/')
+const dbConfig = new Config('myDataBase', true, false, '/');
 
 /**
  * Creates a Node-json-db JSON storage file
@@ -34,58 +44,55 @@ const db = new JsonDB(dbConfig);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post("/otp", (req,res) => {
+app.post('/otp', (req, res) => {
   const { token } = req.body;
   try {
     // Returns true if the token matches
     const tokenValidates = speakeasy.totp.verify({
-      secret: process.env.TOTP_KEY,
-      encoding: process.env.ENCODE,
+      secret: TOTP_KEY,
+      encoding: KEY_ENCODING,
       token,
       window: 1,
     });
     if (tokenValidates) {
       keys.push(uuid.v4());
-      if (keys.length >= 4){
+      if (keys.length >= 4) {
         keys.shift();
       }
-      res.json({key: keys[keys.length - 1], res: true})
+      res.json({ key: keys[keys.length - 1], res: true });
     } else {
-      res.json(false)
+      res.json(false);
     }
-  } catch(error) {
+  } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error retrieving user'})
-  };
-})
+    res.status(500).json({ message: 'Error retrieving user' });
+  }
+});
 
-app.get("/qr", (req,res) => {
-  try{
+app.get('/qr', (req, res) => {
+  try {
     var token = speakeasy.totp({
-      secret: process.env.QR_KEY,
-      encoding: process.env.ENCODE,
+      secret: QR_KEY,
+      encoding: KEY_ENCODING,
       step: 15,
       digits: 8,
     });
-  } catch(error) {
+  } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error retrieving user'})
+    res.status(500).json({ message: 'Error retrieving user' });
   }
-  res.json({ token })
-})
+  res.json({ token });
+});
 
-app.post("/check", (req,res) => {
+app.post('/check', (req, res) => {
   const { key } = req.body;
-  if(keys.includes(key)){
+  if (keys.includes(key)) {
     res.json(true);
-  }
-  else{
+  } else {
     res.json(false);
   }
-})
+});
 
-const port = process.env.TOTP_PORT;
-
-app.listen(port, () => {
-  console.log(`App is running on PORT: ${port}.`);
+app.listen(SERVER_PORT, () => {
+  console.log(`App is running on PORT: ${SERVER_PORT}.`);
 });
