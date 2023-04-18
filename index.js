@@ -53,27 +53,25 @@ app.post('/otp', (req, res) => {
 });
 
 app.get('/qr', (req, res) => {
-  try {
-    var token = speakeasy.totp({
-      secret: QR_KEY,
-      encoding: KEYS_ENCODING,
-      step: 15,
-      digits: 8,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error retrieving user' });
+  const key = req.headers['x-key'];
+  if (key === undefined) {
+    res.status(403).json({ message: 'Key not provided' });
+    return;
   }
-  res.json({ token });
-});
 
-app.post('/check', (req, res) => {
-  const { key } = req.body;
-  if (keys.includes(key)) {
-    res.json(true);
-  } else {
-    res.json(false);
+  if (!keys.includes(key)) {
+    res.status(401).json({ message: 'Key not valid' });
+    return;
   }
+
+  var token = speakeasy.totp({
+    secret: QR_KEY,
+    encoding: KEYS_ENCODING,
+    step: 15,
+    digits: 8,
+  });
+
+  res.json({ token });
 });
 
 app.listen(SERVER_PORT, () => {
