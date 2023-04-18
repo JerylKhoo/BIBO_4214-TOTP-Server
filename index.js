@@ -40,9 +40,9 @@ app.post('/otp', (req, res) => {
     });
     if (tokenValidates) {
       keys.push(uuid.v4());
-      today=Math.floor(Date.now()/86400000);
+      const today=Math.floor(Date.now()/86400000);
       session[keys] = today+1; //set to reset at 12am
-      if (keys.length >= 4) {
+      if (keys.length >= 5) {
         keys.shift();
       }
       res.json({ key: keys[keys.length - 1], res: true });
