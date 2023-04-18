@@ -13,6 +13,7 @@ const {
 } = process.env;
 
 const keys = [];
+var session = {};
 
 if (TOTP_KEY === undefined) {
   throw 'TOTP_KEY must be defined';
@@ -39,6 +40,8 @@ app.post('/otp', (req, res) => {
     });
     if (tokenValidates) {
       keys.push(uuid.v4());
+      today=Math.floor(Date.now()/86400000);
+      session[keys] = today+1; //set to reset at 12am
       if (keys.length >= 4) {
         keys.shift();
       }
@@ -61,6 +64,11 @@ app.get('/qr', (req, res) => {
 
   if (!keys.includes(key)) {
     res.status(401).json({ message: 'Key not valid' });
+    return;
+  }
+
+  if (today>=session[key]) {
+    res.status(401).json({ message: 'Key expired' });
     return;
   }
 
