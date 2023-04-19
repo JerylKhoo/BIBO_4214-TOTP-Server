@@ -40,8 +40,7 @@ app.post('/otp', (req, res) => {
     });
     if (tokenValidates) {
       keys.push(uuid.v4());
-      var today=Math.floor(Date.now()/86400000);
-      session[keys] = today+1; //set to reset at 12am
+      session[keys] = Math.floor(Date.now()/86400000)+1; //set to reset at 8am
       if (keys.length >= 5) {
         keys.shift();
       }
@@ -57,6 +56,7 @@ app.post('/otp', (req, res) => {
 
 app.get('/qr', (req, res) => {
   const key = req.headers['x-key'];
+
   if (key === undefined) {
     res.status(403).json({ message: 'Key not provided' });
     return;
@@ -67,7 +67,7 @@ app.get('/qr', (req, res) => {
     return;
   }
 
-  if (today>=session[key]) {
+  if (Math.floor(Date.now()/86400000)>=session[key]) {
     res.status(401).json({ message: 'Key expired' });
     return;
   }
