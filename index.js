@@ -14,6 +14,7 @@ const {
 
 const keys = [];
 var session = {};
+var genkey;
 
 if (TOTP_KEY === undefined) {
   throw 'TOTP_KEY must be defined';
@@ -39,10 +40,11 @@ app.post('/otp', (req, res) => {
       window: 1,
     });
     if (tokenValidates) {
-      keys.push(uuid.v4());
-      session[keys] = Math.floor(Date.now()/86400000)+1; //set to reset at 8am
-      if (keys.length >= 5) {
-        keys.shift();
+      genkey = uuid.v4();
+      keys.push(genkey);
+      session[genkey] = Date.now()+25000; //set to reset after 25 seconds (demo purposes)
+      if (keys.length > 5) {
+        delete session[keys.shift()];
       }
       res.json({ key: keys[keys.length - 1], res: true });
     } else {
@@ -67,9 +69,18 @@ app.get('/qr', (req, res) => {
     return;
   }
 
-  if (Math.floor(Date.now()/86400000)>=session[key]) {
+  if (Date.now()>=session[key]) {
+    delete session[key];
+    keys.splice(keys.indexOf(key), 1);
     res.status(401).json({ message: 'Key expired' });
     return;
+  }
+
+  for (var i = 0; i < keys.length; i++) {
+    if (Date.now()>=session[keys[i]]) {
+      delete session[keys[i]];
+      keys.splice(i, 1);
+    }
   }
 
   var token = speakeasy.totp({
