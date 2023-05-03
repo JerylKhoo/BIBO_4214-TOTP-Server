@@ -42,7 +42,7 @@ app.post('/otp', (req, res) => {
     if (tokenValidates) {
       genkey = uuid.v4();
       keys.push(genkey);
-      session[genkey] = Date.now()+25000; //set to reset after 25 seconds (demo purposes)
+      session[genkey] = Math.floor(Date.now()/86400000)+1; // Set to reset at 8AM every morning
       if (keys.length > 5) {
         delete session[keys.shift()];
       }
@@ -69,7 +69,7 @@ app.get('/qr', (req, res) => {
     return;
   }
 
-  if (Date.now()>=session[key]) {
+  if (Math.floor(Date.now()/86400000)>=session[key]) {
     delete session[key];
     keys.splice(keys.indexOf(key), 1);
     res.status(401).json({ message: 'Key expired' });
