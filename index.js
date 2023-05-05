@@ -77,7 +77,7 @@ app.get('/qr', (req, res) => {
   }
 
   for (var i = 0; i < keys.length; i++) {
-    if (Date.now()>=session[keys[i]]) {
+    if (Math.floor(Date.now()/86400000)>=session[keys[i]]) {
       delete session[keys[i]];
       keys.splice(i, 1);
     }
